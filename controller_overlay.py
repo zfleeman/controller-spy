@@ -1,8 +1,10 @@
 import argparse
+import os
 from pathlib import Path
 
 import pygame
 
+os.environ["SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS"] = "1"
 # ------------------- Profiles -------------------
 PROFILES = {
     "NES": {
@@ -36,19 +38,19 @@ PROFILES = {
         "controller_name": "SNES PC Game Pad",
         # Axis-based D-pad config
         "axis_dpad": {
-            "x/axis": 0,            # typically 0: left/right  (-1..+1)
-            "y/axis": 1,            # typically 1: up/down     (-1..+1)
-            "threshold": 0.5,       # >=0.5 counted as pressed
-            "invert/y": False,      # set True if your adapter reports up as +1
+            "x/axis": 0,  # typically 0: left/right  (-1..+1)
+            "y/axis": 1,  # typically 1: up/down     (-1..+1)
+            "threshold": 0.5,  # >=0.5 counted as pressed
+            "invert/y": False,  # set True if your adapter reports up as +1
             "overlays": {
-                "left":  "snes/left.png",
+                "left": "snes/left.png",
                 "right": "snes/right.png",
-                "up":    "snes/up.png",
-                "down":  "snes/down.png",
+                "up": "snes/up.png",
+                "down": "snes/down.png",
                 "up/left": "snes/up_left.png",
                 "up/right": "snes/up_right.png",
                 "down/left": "snes/down_left.png",
-                "down/right":"snes/down_right.png",
+                "down/right": "snes/down_right.png",
             },
         },
     },
@@ -65,31 +67,33 @@ PROFILES = {
             # expand as needed depending on how your controller maps
         },
         "controller_name": "8BitDo 64 Bluetooth Controller",
-        "x_axis": 0, "y_axis": 1,
+        "x_axis": 0,
+        "y_axis": 1,
         "stick_overlay": "n64/stick.png",
         "stick_center": (203, 92),  # where the stick base sits on your base image
-        "stick_radius": 20,          # how far it can move
+        "stick_radius": 20,  # how far it can move
         "deadzone": 0.2,
         "c_buttons": {  # mapped via Z Axis and Z Rotation
-            "up":    {"axis": 4, "direction": -1, "image": "n64/c_up.png"},
-            "down":  {"axis": 4, "direction":  1, "image": "n64/c_down.png"},
-            "left":  {"axis": 3, "direction": -1, "image": "n64/c_left.png"},
-            "right": {"axis": 3, "direction":  1, "image": "n64/c_right.png"},
+            "up": {"axis": 4, "direction": -1, "image": "n64/c_up.png"},
+            "down": {"axis": 4, "direction": 1, "image": "n64/c_down.png"},
+            "left": {"axis": 3, "direction": -1, "image": "n64/c_left.png"},
+            "right": {"axis": 3, "direction": 1, "image": "n64/c_right.png"},
             "threshold": 0.5,
         },
         "hat_overlays": {  # d-pad via POV hat
-            (0, 1):  "n64/up.png",
+            (0, 1): "n64/up.png",
             (0, -1): "n64/down.png",
             (-1, 0): "n64/left.png",
-            (1, 0):  "n64/right.png",
+            (1, 0): "n64/right.png",
         },
-    }
-
+    },
 }
 # ------------------------------------------------
 
+
 def load_image(path: Path):
     return pygame.image.load(path).convert_alpha()
+
 
 def main():
 
@@ -248,10 +252,10 @@ def main():
             if inv_y:
                 y = -y
 
-            left  = x <= -th
-            right = x >=  th
-            up    = y <= -th
-            down  = y >=  th
+            left = x <= -th
+            right = x >= th
+            up = y <= -th
+            down = y >= th
 
             # Prefer diagonals if provided
             if up and left and "up_left" in axis_dpad_surfaces:
