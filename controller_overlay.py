@@ -57,32 +57,31 @@ PROFILES = {
         "button_overlays": {
             0: "n64/a.png",
             1: "n64/b.png",
-            2: "n64/z.png",
-            3: "n64/start.png",
-            4: "n64/l.png",
-            5: "n64/r.png",
+            8: "n64/z.png",
+            9: "n64/z.png",
+            11: "n64/start.png",
+            6: "n64/l.png",
+            7: "n64/r.png",
             # expand as needed depending on how your controller maps
         },
         "controller_name": "8BitDo 64 Bluetooth Controller",
-        "stick": {  # control stick
-            "x/axis": 0, "y/axis": 1,
-            "image": "n64/stick.png",
-            "center": (200, 200),  # where the stick base sits on your base image
-            "radius": 40,          # how far it can move
-            "deadzone": 0.2,
-        },
+        "x_axis": 0, "y_axis": 1,
+        "stick_overlay": "n64/stick.png",
+        "stick_center": (203, 92),  # where the stick base sits on your base image
+        "stick_radius": 20,          # how far it can move
+        "deadzone": 0.2,
         "c_buttons": {  # mapped via Z Axis and Z Rotation
-            "up":    {"axis": 2, "direction": -1, "image": "n64/c_up.png"},
-            "down":  {"axis": 2, "direction":  1, "image": "n64/c_down.png"},
+            "up":    {"axis": 4, "direction": -1, "image": "n64/c_up.png"},
+            "down":  {"axis": 4, "direction":  1, "image": "n64/c_down.png"},
             "left":  {"axis": 3, "direction": -1, "image": "n64/c_left.png"},
             "right": {"axis": 3, "direction":  1, "image": "n64/c_right.png"},
             "threshold": 0.5,
         },
         "hat_overlays": {  # d-pad via POV hat
-            (0, 1):  "n64/dpad_up.png",
-            (0, -1): "n64/dpad_down.png",
-            (-1, 0): "n64/dpad_left.png",
-            (1, 0):  "n64/dpad_right.png",
+            (0, 1):  "n64/up.png",
+            (0, -1): "n64/down.png",
+            (-1, 0): "n64/left.png",
+            (1, 0):  "n64/right.png",
         },
     }
 
@@ -280,11 +279,9 @@ def main():
                     continue
                 axis_val = joy.get_axis(mapping["axis"])
                 if mapping["direction"] == -1 and axis_val < -profile["c_buttons"]["threshold"]:
-                    img = overlays.append(cbutton_surfaces[direction]["image"])
-                    if img: screen.blit(img, (0, 0))
+                    overlays.append(cbutton_surfaces[direction])
                 elif mapping["direction"] == 1 and axis_val > profile["c_buttons"]["threshold"]:
-                    img = overlays.append(cbutton_surfaces[direction]["image"])
-                    if img: screen.blit(img, (0, 0))
+                    overlays.append(cbutton_surfaces[direction])
 
         # Draw everything
         screen.fill((0, 0, 0))
