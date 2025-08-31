@@ -1,25 +1,36 @@
+"""
+overlay_logic.py
+
+Logic for determining which overlays to display based on joystick state and profile configuration.
+Includes overlay selection for buttons, hats, axis D-pads, and C buttons.
+"""
 
 
-
-def handle_debug_events(event):
-    # Joystick event type values: 1536=JOYAXISMOTION, 1539=JOYBUTTONDOWN, 1540=JOYBUTTONUP, 1541=JOYHATMOTION
-    if event.type == 1539:
-        print(f"JOYBUTTONDOWN index={event.button}")
-    elif event.type == 1540:
-        print(f"JOYBUTTONUP index={event.button}")
-    elif event.type == 1541:
-        print(f"JOYHATMOTION hat={event.hat} value={event.value}")
-    elif event.type == 1536:
-        print(f"JOYAXISMOTION axis={event.axis} value={event.value:.3f}")
-
-def get_button_overlays(joy, button_surfaces):
+def get_button_overlays(joy, button_surfaces: dict) -> list:
+    """
+    Returns a list of button overlay surfaces for pressed buttons.
+    Args:
+        joy: The pygame joystick object.
+        button_surfaces (dict): Mapping of button indices to surfaces.
+    Returns:
+        list: List of surfaces for pressed buttons.
+    """
     overlays = []
     for i in range(joy.get_numbuttons()):
         if joy.get_button(i) and i in button_surfaces:
             overlays.append(button_surfaces[i])
     return overlays
 
-def get_hat_overlays(joy, hat_surfaces):
+
+def get_hat_overlays(joy, hat_surfaces: dict) -> list:
+    """
+    Returns a list of hat overlay surfaces for active hats.
+    Args:
+        joy: The pygame joystick object.
+        hat_surfaces (dict): Mapping of hat positions to surfaces.
+    Returns:
+        list: List of surfaces for active hats.
+    """
     overlays = []
     for h in range(joy.get_numhats()):
         hat = joy.get_hat(h)
@@ -33,7 +44,17 @@ def get_hat_overlays(joy, hat_surfaces):
                     overlays.append(hat_surfaces[(hat[0], 0)])
     return overlays
 
-def get_axis_dpad_overlays(joy, axis_dpad_cfg, axis_dpad_surfaces):
+
+def get_axis_dpad_overlays(joy, axis_dpad_cfg: dict, axis_dpad_surfaces: dict) -> list:
+    """
+    Returns a list of axis D-pad overlay surfaces based on joystick axis values.
+    Args:
+        joy: The pygame joystick object.
+        axis_dpad_cfg (dict): Configuration for axis D-pad overlays.
+        axis_dpad_surfaces (dict): Mapping of overlay keys to surfaces.
+    Returns:
+        list: List of surfaces for active axis D-pad directions.
+    """
     overlays = []
     if axis_dpad_cfg and axis_dpad_surfaces:
         xi = axis_dpad_cfg.get("x_axis", 0)
@@ -67,7 +88,17 @@ def get_axis_dpad_overlays(joy, axis_dpad_cfg, axis_dpad_surfaces):
                 overlays.append(axis_dpad_surfaces["right"])
     return overlays
 
-def get_cbutton_overlays(joy, profile, cbutton_surfaces):
+
+def get_cbutton_overlays(joy, profile: dict, cbutton_surfaces: dict) -> list:
+    """
+    Returns a list of C button overlay surfaces based on joystick axis values and profile config.
+    Args:
+        joy: The pygame joystick object.
+        profile (dict): Controller profile containing C button config.
+        cbutton_surfaces (dict): Mapping of directions to surfaces.
+    Returns:
+        list: List of surfaces for active C button directions.
+    """
     overlays = []
     if "c_buttons" in profile:
         for direction, mapping in profile["c_buttons"].items():
