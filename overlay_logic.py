@@ -100,13 +100,21 @@ def get_cbutton_overlays(joy, profile: dict, cbutton_surfaces: dict) -> list:
         list: List of surfaces for active C button directions.
     """
     overlays = []
-    if "c_buttons" in profile:
-        for direction, mapping in profile["c_buttons"].items():
-            if direction not in ["up", "down", "left", "right"]:
+    c_buttons = None
+    # Prefer axes["c_buttons"] if present (N64), else fallback to profile["c_buttons"] for legacy
+    if "axes" in profile and "c_buttons" in profile["axes"]:
+        c_buttons = profile["axes"]["c_buttons"]
+    elif "c_buttons" in profile:
+        c_buttons = profile["c_buttons"]
+    if c_buttons:
+        threshold = c_buttons.get("threshold", 0.5)
+        for direction in ["up", "down", "left", "right"]:
+            mapping = c_buttons.get(direction)
+            if not mapping:
                 continue
             axis_val = joy.get_axis(mapping["axis"])
-            if mapping["direction"] == -1 and axis_val < -profile["c_buttons"]["threshold"]:
+            if mapping["direction"] == -1 and axis_val < -threshold:
                 overlays.append(cbutton_surfaces[direction])
-            elif mapping["direction"] == 1 and axis_val > profile["c_buttons"]["threshold"]:
+            elif mapping["direction"] == 1 and axis_val > threshold:
                 overlays.append(cbutton_surfaces[direction])
     return overlays

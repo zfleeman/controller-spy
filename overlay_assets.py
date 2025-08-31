@@ -58,7 +58,7 @@ def load_hat_overlays(assets_dir: Path, hat_overlays: dict) -> dict:
     return hat_surfaces
 
 
-def load_cbutton_overlays(assets_dir: Path, cbutton_cfg: dict) -> dict:
+def load_axis_cbutton_overlays(assets_dir: Path, cbutton_cfg: dict) -> dict:
     """
     Loads C button overlay images from the assets directory.
     Args:
@@ -100,7 +100,7 @@ def load_axis_dpad_overlays(assets_dir: Path, axis_dpad_cfg: dict) -> dict:
     return axis_dpad_surfaces
 
 
-def load_stick_overlay(
+def load_axis_stick_overlay(
     assets_dir: Path, stick_center: tuple | None, stick_overlay_file: str | None
 ) -> "pygame.Surface | None":
     """
