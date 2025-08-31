@@ -5,6 +5,10 @@ Main entry point for the controller overlay application. Handles argument parsin
 and initializes the overlay display using pygame and custom logic modules.
 """
 
+import sys
+
+sys.dont_write_bytecode = True  # Prevent writing __pycache__
+
 import argparse
 import os
 from pathlib import Path
@@ -108,7 +112,7 @@ def main() -> None:
             if axis_dpad_cfg:
                 overlays += get_axis_dpad_overlays(joy, axis_dpad_cfg, axis_dpad_surfaces)
 
-            if axis_cbutton_surfaces:
+            if profile.get("console") == "N64":
                 overlays += get_cbutton_overlays(joy, profile, axis_cbutton_surfaces)
 
             if axis_stick_surfaces:
@@ -133,8 +137,8 @@ def main() -> None:
         for surface in overlays:
             screen.blit(surface, (0, 0))
 
-        if axis_stick_surfaces:
-            screen.blit(axis_stick_surfaces, rect.topleft)
+        # if axis_stick_surfaces:  # currently bugged for n64
+        #     screen.blit(axis_stick_surfaces, rect.topleft)
 
         pygame.display.flip()
         clock.tick(60)
