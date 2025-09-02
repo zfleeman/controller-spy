@@ -75,11 +75,16 @@ def main() -> None:
     pygame.display.set_caption(f"{profile['controller_name']} Overlay")
     base_img = base_raw.convert_alpha()
 
+    ####################################
+    ### BEGIN BUTTON SURFACE LOADING ###
+    ####################################
+
     # every controller should have buttons
-    button_surfaces = load_button_overlays(assets_dir=assets_dir, button_overlays=profile.get("button_overlays"))
+    button_overlays = profile.get("button_overlays")
+    button_surfaces = load_button_overlays(assets_dir=assets_dir, button_overlays=button_overlays)
 
     # work with hats -- usually a dpad
-    hat_overlays = profile.get("hat_overlays", {})
+    hat_overlays = profile.get("hat_overlays")
     if hat_overlays:
         hat_surfaces = load_hat_overlays(assets_dir=assets_dir, hat_overlays=hat_overlays)
 
@@ -87,18 +92,21 @@ def main() -> None:
     axes: dict = profile.get("axes", {})
     if axes:
 
+        # n64 cbuttons are super special
         if profile.get("console") == "N64":
             cbutton_cfg = axes.get("c_buttons", {})
             axis_cbutton_surfaces = load_axis_cbutton_overlays(assets_dir, cbutton_cfg)
 
+        # if the dpad is on an axis, not a hat
         axis_dpad_cfg = axes.get("dpad")
-        axis_dpad_surfaces = load_axis_dpad_overlays(assets_dir, axis_dpad_cfg)
+        if axis_dpad_cfg:
+            axis_dpad_surfaces = load_axis_dpad_overlays(assets_dir, axis_dpad_cfg)
 
+        # left stick axis
         l_stick_cfg = axes.get("l_stick", {})
         axis_stick_surfaces = load_axis_stick_overlay(
             assets_dir,
-            l_stick_cfg.get("center"),
-            l_stick_cfg.get("overlay"),
+            l_stick_cfg.get("overlay", ""),
         )
         l_stick_center = l_stick_cfg.get("center")
         l_stick_radius = l_stick_cfg.get("radius")
@@ -151,8 +159,9 @@ def main() -> None:
         for surface in overlays:
             screen.blit(surface, (0, 0))
 
-        if axis_stick_surfaces:  # currently bugged for n64
-            screen.blit(axis_stick_surfaces, rect.topleft)
+        if profile.get("axes"):
+            if axis_stick_surfaces:  # currently bugged for n64
+                screen.blit(axis_stick_surfaces, rect.topleft)
 
         pygame.display.flip()
         clock.tick(60)

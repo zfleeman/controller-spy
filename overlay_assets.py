@@ -68,15 +68,14 @@ def load_axis_cbutton_overlays(assets_dir: Path, cbutton_cfg: dict) -> dict:
         dict: Mapping of directions to loaded image surfaces.
     """
     cbutton_surfaces = {}
-    if cbutton_cfg:
-        for direction in ["up", "down", "left", "right"]:
-            mapping = cbutton_cfg.get(direction)
-            if mapping:
-                path = assets_dir / mapping["image"]
-                if path.is_file():
-                    cbutton_surfaces[direction] = pygame.image.load(path).convert_alpha()
-                else:
-                    print(f"Warning: missing C button overlay: {path}")
+    for direction in ["up", "down", "left", "right"]:
+        mapping = cbutton_cfg.get(direction)
+        if mapping:
+            path = assets_dir / mapping["overlay"]
+            if path.is_file():
+                cbutton_surfaces[direction] = pygame.image.load(path).convert_alpha()
+            else:
+                print(f"Warning: missing C button overlay: {path}")
     return cbutton_surfaces
 
 
@@ -90,32 +89,27 @@ def load_axis_dpad_overlays(assets_dir: Path, axis_dpad_cfg: dict) -> dict:
         dict: Mapping of overlay keys to loaded image surfaces.
     """
     axis_dpad_surfaces = {}
-    if axis_dpad_cfg:
-        for key, fname in axis_dpad_cfg.get("overlays", {}).items():
-            path = assets_dir / fname
-            if path.is_file():
-                axis_dpad_surfaces[key] = load_image(path)
-            else:
-                print(f"Warning: missing axis-dpad overlay: {path}")
+    for key, fname in axis_dpad_cfg.get("overlays", {}).items():
+        path = assets_dir / fname
+        if path.is_file():
+            axis_dpad_surfaces[key] = load_image(path)
+        else:
+            print(f"Warning: missing axis-dpad overlay: {path}")
     return axis_dpad_surfaces
 
 
-def load_axis_stick_overlay(
-    assets_dir: Path, stick_center: tuple | None, stick_overlay_file: str | None
-) -> "pygame.Surface | None":
+def load_axis_stick_overlay(assets_dir: Path, stick_overlay_file: str | None) -> "pygame.Surface | None":
     """
     Loads the stick overlay image from the assets directory if specified.
     Args:
         assets_dir (Path): Directory containing assets.
-        stick_center (tuple | None): Center position of the stick (unused here).
         stick_overlay_file (str | None): Filename of the stick overlay image.
     Returns:
         pygame.Surface | None: The loaded image surface or None if not found.
     """
-    if stick_center and stick_overlay_file:
-        path = assets_dir / stick_overlay_file
-        if path.is_file():
-            return pygame.image.load(path).convert_alpha()
-        else:
-            print(f"Warning: stick overlay missing {path}")
+    path = assets_dir / stick_overlay_file
+
+    if path.is_file():
+        return pygame.image.load(path).convert_alpha()
+
     return None

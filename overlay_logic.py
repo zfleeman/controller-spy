@@ -64,11 +64,8 @@ def get_axis_dpad_overlays(
         xi = axis_dpad_cfg.get("x_axis", 0)
         yi = axis_dpad_cfg.get("y_axis", 1)
         th = axis_dpad_cfg.get("threshold", 0.5)
-        inv_y = axis_dpad_cfg.get("invert_y", False)
         x = joy.get_axis(xi)
         y = joy.get_axis(yi)
-        if inv_y:
-            y = -y
         left = x <= -th
         right = x >= th
         up = y <= -th

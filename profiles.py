@@ -36,7 +36,6 @@ PROFILES = {
                 "x_axis": 0,
                 "y_axis": 1,
                 "threshold": 0.5,
-                "invert_y": False,
                 "overlays": {
                     "left": "snes/left.png",
                     "right": "snes/right.png",
@@ -73,10 +72,10 @@ PROFILES = {
                 "deadzone": 0.2,
             },
             "c_buttons": {
-                "up": {"axis": 4, "direction": -1, "image": "n64/c_up.png"},
-                "down": {"axis": 4, "direction": 1, "image": "n64/c_down.png"},
-                "left": {"axis": 3, "direction": -1, "image": "n64/c_left.png"},
-                "right": {"axis": 3, "direction": 1, "image": "n64/c_right.png"},
+                "up": {"axis": 4, "direction": -1, "overlay": "n64/c_up.png"},
+                "down": {"axis": 4, "direction": 1, "overlay": "n64/c_down.png"},
+                "left": {"axis": 3, "direction": -1, "overlay": "n64/c_left.png"},
+                "right": {"axis": 3, "direction": 1, "overlay": "n64/c_right.png"},
                 "threshold": 0.5,
             },
         },
