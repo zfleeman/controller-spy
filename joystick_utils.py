@@ -16,9 +16,10 @@ def get_joystick(profile: dict) -> "pygame.joystick.Joystick | None":
         pygame.joystick.Joystick | None: The joystick object if found, else None.
     """
     pygame.joystick.init()
+
     if pygame.joystick.get_count() == 0:
-        print("No joysticks detected.")
-        return None
+        raise Exception("No joysticks detected.")
+
     joystick_index = 0
     found = False
     for i in range(pygame.joystick.get_count()):

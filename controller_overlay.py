@@ -11,6 +11,7 @@ sys.dont_write_bytecode = True  # Prevent writing __pycache__
 
 import argparse
 import os
+from argparse import Namespace
 from pathlib import Path
 
 import pygame
@@ -34,9 +35,9 @@ from profiles import PROFILES
 os.environ["SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS"] = "1"
 
 
-def main() -> None:
+def get_args() -> Namespace:
     """
-    Main entry point for the controller overlay application. Parses arguments, loads profile, and initializes pygame.
+    Parse arguments/get profile.
     """
     parser = argparse.ArgumentParser(description="Controller Overlay")
     parser.add_argument(
@@ -46,20 +47,28 @@ def main() -> None:
         choices=list(PROFILES.keys()),
         help=f"Controller profile to use. Choices: {', '.join(PROFILES.keys())}",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main() -> None:
+    """
+    Main entry point for the controller overlay application. Parses arguments, loads profile, and initializes pygame.
+    """
+    args = get_args()
     profile: dict = PROFILES[args.profile]
     assets_dir = Path("assets")
-
     pygame.init()
     joy = get_joystick(profile)
+
     if not joy:
-        return
+        raise RuntimeError(f"Joystick not found: {profile['controller_name']}")
 
     base_path = assets_dir / profile["base"]
+
     if not base_path.is_file():
-        print("Base image not found:", base_path)
-        return
+        raise FileNotFoundError(f"Base image not found: {base_path}")
+
+    # display the base image
     base_raw = pygame.image.load(str(base_path))
     w, h = base_raw.get_size()
     screen = pygame.display.set_mode((w, h))
@@ -97,6 +106,8 @@ def main() -> None:
 
     clock = pygame.time.Clock()
     running = True
+
+    # begin polling loop
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -106,8 +117,10 @@ def main() -> None:
 
         overlays = []
 
+        # every controller will have button overlays
         overlays += get_button_overlays(joy, button_surfaces)
 
+        # flow controller for axes
         if axes:
             if axis_dpad_cfg:
                 overlays += get_axis_dpad_overlays(joy, axis_dpad_cfg, axis_dpad_surfaces)
@@ -129,6 +142,7 @@ def main() -> None:
                 stick_py = int(l_stick_center[1] + y * l_stick_radius)
                 rect = axis_stick_surfaces.get_rect(center=(stick_px, stick_py))
 
+        # hat overlays for dpad, usually
         if hat_overlays:
             overlays += get_hat_overlays(joy, hat_surfaces)
 
@@ -137,8 +151,8 @@ def main() -> None:
         for surface in overlays:
             screen.blit(surface, (0, 0))
 
-        # if axis_stick_surfaces:  # currently bugged for n64
-        #     screen.blit(axis_stick_surfaces, rect.topleft)
+        if axis_stick_surfaces:  # currently bugged for n64
+            screen.blit(axis_stick_surfaces, rect.topleft)
 
         pygame.display.flip()
         clock.tick(60)

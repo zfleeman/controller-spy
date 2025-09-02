@@ -1,3 +1,9 @@
+"""
+profiles.py
+
+Controller profiles.
+"""
+
 PROFILES = {
     "NES": {
         "base": "nes/base.png",
