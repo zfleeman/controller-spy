@@ -26,6 +26,7 @@ class ControllerProfile:
     based on the current joystick state. Enables data-driven, extensible controller support.
     Supports multiple analog sticks (e.g., l_stick, r_stick, etc.).
     """
+
     def __init__(self, profile, assets_dir):
         self.profile = profile
         self.assets_dir = assets_dir

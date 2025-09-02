@@ -60,33 +60,34 @@ def get_axis_dpad_overlays(
         list: List of surfaces for active axis D-pad directions.
     """
     overlays = []
-    if axis_dpad_cfg and axis_dpad_surfaces:
-        xi = axis_dpad_cfg.get("x_axis", 0)
-        yi = axis_dpad_cfg.get("y_axis", 1)
-        th = axis_dpad_cfg.get("threshold", 0.5)
-        x = joy.get_axis(xi)
-        y = joy.get_axis(yi)
-        left = x <= -th
-        right = x >= th
-        up = y <= -th
-        down = y >= th
-        if up and left and "up_left" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["up_left"])
-        elif up and right and "up_right" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["up_right"])
-        elif down and left and "down_left" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["down_left"])
-        elif down and right and "down_right" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["down_right"])
-        else:
-            if up and "up" in axis_dpad_surfaces:
-                overlays.append(axis_dpad_surfaces["up"])
-            if down and "down" in axis_dpad_surfaces:
-                overlays.append(axis_dpad_surfaces["down"])
-            if left and "left" in axis_dpad_surfaces:
-                overlays.append(axis_dpad_surfaces["left"])
-            if right and "right" in axis_dpad_surfaces:
-                overlays.append(axis_dpad_surfaces["right"])
+    if not axis_dpad_cfg or not axis_dpad_surfaces:
+        return overlays
+    xi = axis_dpad_cfg.get("x_axis", 0)
+    yi = axis_dpad_cfg.get("y_axis", 1)
+    th = axis_dpad_cfg.get("threshold", 0.5)
+    x = joy.get_axis(xi)
+    y = joy.get_axis(yi)
+    left = x <= -th
+    right = x >= th
+    up = y <= -th
+    down = y >= th
+    if up and left and "up_left" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["up_left"])
+    elif up and right and "up_right" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["up_right"])
+    elif down and left and "down_left" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["down_left"])
+    elif down and right and "down_right" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["down_right"])
+    else:
+        if up and "up" in axis_dpad_surfaces:
+            overlays.append(axis_dpad_surfaces["up"])
+        if down and "down" in axis_dpad_surfaces:
+            overlays.append(axis_dpad_surfaces["down"])
+        if left and "left" in axis_dpad_surfaces:
+            overlays.append(axis_dpad_surfaces["left"])
+        if right and "right" in axis_dpad_surfaces:
+            overlays.append(axis_dpad_surfaces["right"])
     return overlays
 
 
@@ -103,21 +104,18 @@ def get_cbutton_overlays(
         list: List of surfaces for active C button directions.
     """
     overlays = []
-    c_buttons = None
     # Prefer axes["c_buttons"] if present (N64), else fallback to profile["c_buttons"] for legacy
-    if "axes" in profile and "c_buttons" in profile["axes"]:
-        c_buttons = profile["axes"]["c_buttons"]
-    elif "c_buttons" in profile:
-        c_buttons = profile["c_buttons"]
-    if c_buttons:
-        threshold = c_buttons.get("threshold", 0.5)
-        for direction in ["up", "down", "left", "right"]:
-            mapping = c_buttons.get(direction)
-            if not mapping:
-                continue
-            axis_val = joy.get_axis(mapping["axis"])
-            if mapping["direction"] == -1 and axis_val < -threshold:
-                overlays.append(cbutton_surfaces[direction])
-            elif mapping["direction"] == 1 and axis_val > threshold:
-                overlays.append(cbutton_surfaces[direction])
+    c_buttons = profile.get("axes", {}).get("c_buttons") or profile.get("c_buttons")
+    if not c_buttons:
+        return overlays
+    threshold = c_buttons.get("threshold", 0.5)
+    for direction in ["up", "down", "left", "right"]:
+        mapping = c_buttons.get(direction)
+        if not mapping:
+            continue
+        axis_val = joy.get_axis(mapping["axis"])
+        if mapping["direction"] == -1 and axis_val < -threshold:
+            overlays.append(cbutton_surfaces[direction])
+        elif mapping["direction"] == 1 and axis_val > threshold:
+            overlays.append(cbutton_surfaces[direction])
     return overlays
