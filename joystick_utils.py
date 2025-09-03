@@ -4,10 +4,12 @@ joystick_utils.py
 Utility functions for initializing and retrieving pygame joystick objects based on controller profiles.
 """
 
+from typing import Optional
+
 import pygame
 
 
-def get_joystick(profile: dict) -> "pygame.joystick.Joystick | None":
+def get_joystick(profile: dict) -> Optional[pygame.joystick.JoystickType]:
     """
     Initializes and returns a pygame joystick matching the controller name in the profile.
     Args:
@@ -18,7 +20,7 @@ def get_joystick(profile: dict) -> "pygame.joystick.Joystick | None":
     pygame.joystick.init()
 
     if pygame.joystick.get_count() == 0:
-        raise Exception("No joysticks detected.")
+        raise RuntimeError("No joysticks detected.")
 
     joystick_index = 0
     found = False

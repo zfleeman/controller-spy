@@ -6,9 +6,10 @@ Includes overlay selection for buttons, hats, axis D-pads, and C buttons.
 """
 
 from pygame.joystick import JoystickType
+from pygame.surface import Surface
 
 
-def get_button_overlays(joy: JoystickType, button_surfaces: dict[int, object]) -> list[object]:
+def get_button_overlays(joy: JoystickType, button_surfaces: dict[int, Surface]) -> list[Surface]:
     """
     Returns a list of button overlay surfaces for pressed buttons.
     Args:
@@ -24,7 +25,7 @@ def get_button_overlays(joy: JoystickType, button_surfaces: dict[int, object]) -
     return overlays
 
 
-def get_hat_overlays(joy: JoystickType, hat_surfaces: dict[tuple[int, int], object]) -> list[object]:
+def get_hat_overlays(joy: JoystickType, hat_surfaces: dict[tuple[int, int], Surface]) -> list[Surface]:
     """
     Returns a list of hat overlay surfaces for active hats.
     Args:
@@ -48,8 +49,8 @@ def get_hat_overlays(joy: JoystickType, hat_surfaces: dict[tuple[int, int], obje
 
 
 def get_axis_dpad_overlays(
-    joy: JoystickType, axis_dpad_cfg: dict[str, object], axis_dpad_surfaces: dict[str, object]
-) -> list[object]:
+    joy: JoystickType, axis_dpad_cfg: dict[str, Surface], axis_dpad_surfaces: dict[str, Surface]
+) -> list[Surface]:
     """
     Returns a list of axis D-pad overlay surfaces based on joystick axis values.
     Args:
@@ -71,29 +72,18 @@ def get_axis_dpad_overlays(
     right = x >= th
     up = y <= -th
     down = y >= th
-    if up and left and "up_left" in axis_dpad_surfaces:
-        overlays.append(axis_dpad_surfaces["up_left"])
-    elif up and right and "up_right" in axis_dpad_surfaces:
-        overlays.append(axis_dpad_surfaces["up_right"])
-    elif down and left and "down_left" in axis_dpad_surfaces:
-        overlays.append(axis_dpad_surfaces["down_left"])
-    elif down and right and "down_right" in axis_dpad_surfaces:
-        overlays.append(axis_dpad_surfaces["down_right"])
-    else:
-        if up and "up" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["up"])
-        if down and "down" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["down"])
-        if left and "left" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["left"])
-        if right and "right" in axis_dpad_surfaces:
-            overlays.append(axis_dpad_surfaces["right"])
+    if up and "up" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["up"])
+    if down and "down" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["down"])
+    if left and "left" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["left"])
+    if right and "right" in axis_dpad_surfaces:
+        overlays.append(axis_dpad_surfaces["right"])
     return overlays
 
 
-def get_cbutton_overlays(
-    joy: JoystickType, profile: dict[str, object], cbutton_surfaces: dict[str, object]
-) -> list[object]:
+def get_cbutton_overlays(joy: JoystickType, profile: dict, cbutton_surfaces: dict[str, Surface]) -> list[object]:
     """
     Returns a list of C button overlay surfaces based on joystick axis values and profile config.
     Args:
@@ -104,8 +94,7 @@ def get_cbutton_overlays(
         list: List of surfaces for active C button directions.
     """
     overlays = []
-    # Prefer axes["c_buttons"] if present (N64), else fallback to profile["c_buttons"] for legacy
-    c_buttons = profile.get("axes", {}).get("c_buttons") or profile.get("c_buttons")
+    c_buttons = profile.get("axes", {}).get("c_buttons")
     if not c_buttons:
         return overlays
     threshold = c_buttons.get("threshold", 0.5)

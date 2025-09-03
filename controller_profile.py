@@ -4,6 +4,13 @@ controller_profile.py
 Encapsulates all logic and assets for a controller profile, enabling data-driven overlays and input handling.
 """
 
+from pathlib import Path
+from typing import Any, Dict
+
+from pygame import Surface
+from pygame.joystick import JoystickType
+from pygame.rect import Rect
+
 from overlay_assets import (
     load_axis_cbutton_overlays,
     load_axis_dpad_overlays,
@@ -27,43 +34,65 @@ class ControllerProfile:
     Supports multiple analog sticks (e.g., l_stick, r_stick, etc.).
     """
 
-    def __init__(self, profile, assets_dir):
+    def __init__(self, profile: dict, assets_dir: Path):
         self.profile = profile
         self.assets_dir = assets_dir
 
-        # Preload all overlays
-        self.button_surfaces = load_button_overlays(assets_dir, profile.get("button_overlays", {}))
-        self.hat_surfaces = load_hat_overlays(assets_dir, profile.get("hat_overlays", {}))
+        # buttons
+        self.button_surfaces = load_button_overlays(
+            assets_dir=assets_dir, button_overlays=profile.get("button_overlays", {})
+        )
+
+        # hat
+        self.hat_surfaces = load_hat_overlays(assets_dir=assets_dir, hat_overlays=profile.get("hat_overlays", {}))
+
+        # axes
         self.axis_dpad_cfg = profile.get("axes", {}).get("dpad")
         self.axis_dpad_surfaces = (
-            load_axis_dpad_overlays(assets_dir, self.axis_dpad_cfg) if self.axis_dpad_cfg else None
+            load_axis_dpad_overlays(assets_dir=assets_dir, axis_dpad_cfg=self.axis_dpad_cfg)
+            if self.axis_dpad_cfg
+            else None
         )
         self.cbutton_cfg = profile.get("axes", {}).get("c_buttons")
-        self.cbutton_surfaces = load_axis_cbutton_overlays(assets_dir, self.cbutton_cfg) if self.cbutton_cfg else None
+        self.cbutton_surfaces = (
+            load_axis_cbutton_overlays(assets_dir=assets_dir, cbutton_cfg=self.cbutton_cfg)
+            if self.cbutton_cfg
+            else None
+        )
 
         # Support multiple sticks (l_stick, r_stick, etc.)
         self.stick_cfgs = {}
         self.stick_surfaces = {}
-        axes = profile.get("axes", {})
+        axes: Dict[str, Any] = profile.get("axes", {})
         for stick_name, cfg in axes.items():
             if stick_name.endswith("_stick") and isinstance(cfg, dict):
                 self.stick_cfgs[stick_name] = cfg
-                self.stick_surfaces[stick_name] = load_axis_stick_overlay(assets_dir, cfg.get("overlay", ""))
+                self.stick_surfaces[stick_name] = load_axis_stick_overlay(
+                    assets_dir=assets_dir, stick_overlay_file=cfg.get("overlay", "")
+                )
 
-    def get_active_overlays(self, joy):
+    def get_active_overlays(self, joy: JoystickType):
+        """
+        Use the "get" functions" to append our overlays
+        """
         overlays = []
-        overlays += get_button_overlays(joy, self.button_surfaces)
+        overlays += get_button_overlays(joy=joy, button_surfaces=self.button_surfaces)
         if self.axis_dpad_cfg and self.axis_dpad_surfaces:
-            overlays += get_axis_dpad_overlays(joy, self.axis_dpad_cfg, self.axis_dpad_surfaces)
+            overlays += get_axis_dpad_overlays(
+                joy=joy, axis_dpad_cfg=self.axis_dpad_cfg, axis_dpad_surfaces=self.axis_dpad_surfaces
+            )
         if self.cbutton_cfg and self.cbutton_surfaces:
-            overlays += get_cbutton_overlays(joy, self.profile, self.cbutton_surfaces)
+            overlays += get_cbutton_overlays(joy=joy, profile=self.profile, cbutton_surfaces=self.cbutton_surfaces)
         if self.hat_surfaces:
-            overlays += get_hat_overlays(joy, self.hat_surfaces)
+            overlays += get_hat_overlays(joy=joy, hat_surfaces=self.hat_surfaces)
         return overlays
 
-    def get_stick_rect(self, joy, stick_name):
-        cfg = self.stick_cfgs.get(stick_name)
-        surface = self.stick_surfaces.get(stick_name)
+    def get_stick_rect(self, joy: JoystickType, stick_name: str) -> tuple[Surface, Rect]:
+        """
+        Work with the stick surface
+        """
+        cfg: dict = self.stick_cfgs.get(stick_name)
+        surface: Surface = self.stick_surfaces.get(stick_name)
         if not (cfg and surface):
             return None, None
         x_axis = cfg.get("x_axis", 0)
