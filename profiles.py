@@ -17,6 +17,25 @@ PROFILES = {
             (1, 0): "nes/right.png",
         },
     },
+    "NES_SNES_Classic": {
+        "base": "nes/base.png",
+        "button_overlays": {
+            0: "nes/b.png",
+            1: "nes/turbo_b.png",
+            2: "nes/a.png",
+            3: "nes/turbo_a.png",
+            8: "nes/select.png",
+            9: "nes/start.png",
+        },
+        "console": "NES",
+        "controller_name": "JC-W01U",
+        "hat_overlays": {
+            (0, 1): "nes/up.png",
+            (0, -1): "nes/down.png",
+            (-1, 0): "nes/left.png",
+            (1, 0): "nes/right.png",
+        },
+    },
     "SNES_Classic": {
         "base": "snes/base.png",
         "button_overlays": {
