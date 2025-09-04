@@ -15,11 +15,13 @@ from overlay_assets import (
     load_axis_cbutton_overlays,
     load_axis_dpad_overlays,
     load_axis_stick_overlay,
+    load_axis_triggers_overlays,
     load_button_overlays,
     load_hat_overlays,
 )
 from overlay_logic import (
     get_axis_dpad_overlays,
+    get_axis_trigger_overlays,
     get_button_overlays,
     get_cbutton_overlays,
     get_hat_overlays,
@@ -59,6 +61,12 @@ class ControllerProfile:
             if self.cbutton_cfg
             else None
         )
+        self.axis_triggers_cfg = profile.get("axes", {}).get("triggers")
+        self.axis_triggers_surfaces = (
+            load_axis_triggers_overlays(assets_dir=assets_dir, axis_triggers_cfg=self.axis_triggers_cfg)
+            if self.axis_triggers_cfg
+            else None
+        )
 
         # Support multiple sticks (l_stick, r_stick, etc.)
         self.stick_cfgs = {}
@@ -85,6 +93,10 @@ class ControllerProfile:
             overlays += get_cbutton_overlays(joy=joy, profile=self.profile, cbutton_surfaces=self.cbutton_surfaces)
         if self.hat_surfaces:
             overlays += get_hat_overlays(joy=joy, hat_surfaces=self.hat_surfaces)
+        if self.axis_triggers_cfg and self.axis_triggers_surfaces:
+            overlays += get_axis_trigger_overlays(
+                joy=joy, axis_triggers_cfg=self.axis_triggers_cfg, axis_triggers_surfaces=self.axis_triggers_surfaces
+            )
         return overlays
 
     def get_stick_rect(self, joy: JoystickType, stick_name: str) -> tuple[Surface, Rect]:

@@ -83,6 +83,35 @@ def get_axis_dpad_overlays(
     return overlays
 
 
+def get_axis_trigger_overlays(
+    joy: JoystickType, axis_triggers_cfg: dict[str, Surface], axis_triggers_surfaces: dict[str, Surface]
+) -> list[Surface]:
+    """
+    Returns a list of axis trigger overlay surfaces based on joystick axis values.
+    Args:
+        joy: The pygame joystick object.
+        axis_triggers_cfg (dict): Configuration for axis triggers overlays.
+        axis_triggers_surfaces (dict): Mapping of overlay keys to surfaces.
+    Returns:
+        list: List of surfaces for active axis triggers directions.
+    """
+    overlays = []
+    if not axis_triggers_cfg or not axis_triggers_surfaces:
+        return overlays
+    xi = axis_triggers_cfg.get("x_axis", 0)
+    yi = axis_triggers_cfg.get("y_axis", 1)
+    th = axis_triggers_cfg.get("threshold", 0.5)
+    x = joy.get_axis(xi)
+    y = joy.get_axis(yi)
+    l2 = x >= -th
+    r2 = y >= -th
+    if l2 and "l2" in axis_triggers_surfaces:
+        overlays.append(axis_triggers_surfaces["l2"])
+    if r2 and "r2" in axis_triggers_surfaces:
+        overlays.append(axis_triggers_surfaces["r2"])
+    return overlays
+
+
 def get_cbutton_overlays(joy: JoystickType, profile: dict, cbutton_surfaces: dict[str, Surface]) -> list[object]:
     """
     Returns a list of C button overlay surfaces based on joystick axis values and profile config.

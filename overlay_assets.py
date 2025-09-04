@@ -98,6 +98,25 @@ def load_axis_dpad_overlays(assets_dir: Path, axis_dpad_cfg: dict) -> dict:
     return axis_dpad_surfaces
 
 
+def load_axis_triggers_overlays(assets_dir: Path, axis_triggers_cfg: dict) -> dict:
+    """
+    Loads axis triggers overlay images from the assets directory.
+    Args:
+        assets_dir (Path): Directory containing assets.
+        axis_triggers_cfg (dict): Configuration for axis triggers overlays.
+    Returns:
+        dict: Mapping of overlay keys to loaded image surfaces.
+    """
+    axis_triggers_surfaces = {}
+    for key, fname in axis_triggers_cfg.get("overlays", {}).items():
+        path = assets_dir / fname
+        if path.is_file():
+            axis_triggers_surfaces[key] = load_image(path)
+        else:
+            print(f"Warning: missing axis-triggers overlay: {path}")
+    return axis_triggers_surfaces
+
+
 def load_axis_stick_overlay(assets_dir: Path, stick_overlay_file: str | None) -> "pygame.Surface | None":
     """
     Loads the stick overlay image from the assets directory if specified.
