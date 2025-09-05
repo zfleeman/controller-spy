@@ -137,6 +137,8 @@ PROFILES = {
             12: "psx/down.png",
             13: "psx/left.png",
             14: "psx/right.png",
+            7: "psx/l_thumb.png",
+            8: "psx/r_thumb.png",
         },
         "console": "PSX",
         "controller_name": "PS4 Controller",

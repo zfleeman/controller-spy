@@ -58,7 +58,7 @@ def main() -> None:
     base_raw = pygame.image.load(str(base_path))
     w, h = base_raw.get_size()
     screen = pygame.display.set_mode((w, h))
-    pygame.display.set_caption(f"{profile['controller_name']} Overlay")
+    pygame.display.set_caption("Game Controller Overlay")
     base_img = base_raw.convert_alpha()
 
     # Use the new ControllerProfile abstraction
